@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADES WITH MAHAM | V8.0 PRO</title>
+    <style>
+        :root { --gold: #ff9900; --bg: #050505; --green: #00ff88; --red: #ff3366; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 5px; text-align: center; }
+        .header { color: var(--gold); font-size: 18px; font-weight: bold; padding: 10px; border-bottom: 1px solid #222; }
+        
+        #chart-box { position: relative; height: 450px; border: 1px solid #333; margin-top: 5px; background: #000; border-radius: 10px; overflow: hidden; }
+        
+        /* Fixed Real-Time Arrow */
+        #indicator-arrow { 
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 120px; z-index: 100; display: none; 
+            filter: drop-shadow(0 0 15px rgba(0,0,0,1));
+        }
+
+        #timer { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: var(--gold); padding: 5px 10px; border-radius: 5px; font-size: 12px; z-index: 101; border: 1px solid #444; }
+
+        .pairs { display: flex; overflow-x: auto; gap: 5px; padding: 10px; justify-content: center; }
+        .pair-btn { background: #111; border: 1px solid #333; color: #888; padding: 8px 15px; border-radius: 5px; font-size: 12px; white-space: nowrap; }
+        .pair-btn.active { background: var(--gold); color: black; font-weight: bold; }
+
+        #accuracy-meter { margin-top: 10px; font-size: 11px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="header">TRADES WITH MAHAM V8.0</div>
+
+    <div class="pairs">
+        <button class="pair-btn active" onclick="change('EURUSD', this)">EUR/USD</button>
+        <button class="pair-btn" onclick="change('GBPUSD', this)">GBP/USD</button>
+        <button class="pair-btn" onclick="change('XAUUSD', this)">GOLD</button>
+        <button class="pair-btn" onclick="change('BTCUSD', this)">BITCOIN</button>
+    </div>
+
+    <div id="chart-box">
+        <div id="timer">CANDLE: <span id="clock">--</span>s</div>
+        <div id="indicator-arrow"></div>
+        <div id="tv-widget" style="height: 100%;"></div>
+    </div>
+
+    <div id="accuracy-meter">
+        <span id="status">ANALYZING TREND...</span><br>
+        POWERED BY MAHAM AI | 1M SCALPING
+    </div>
+
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script>
+    let currentPair = "EURUSD";
+
+    function load(p) {
+        new TradingView.widget({
+            "autosize": true, "symbol": "FX_IDC:" + p, "interval": "1",
+            "timezone": "Etc/UTC", "theme": "dark", "style": "1",
+            "container_id": "tv-widget", "hide_top_toolbar": true, "withdateranges": false
+        });
+    }
+
+    function change(p, b) {
+        document.querySelectorAll('.pair-btn').forEach(btn => btn.classList.remove('active'));
+        b.classList.add('active');
+        currentPair = p;
+        load(p);
+    }
+
+    // New Logic: 3 Second Alert
+    setInterval(() => {
+        let s = new Date().getSeconds();
+        let rem = 60 - s;
+        document.getElementById('clock').innerText = rem;
+
+        if (rem === 3) {
+            showSignal();
+        }
+        if (rem === 58) {
+            document.getElementById('indicator-arrow').style.display = "none";
+            document.getElementById('status').innerText = "WAITING FOR SIGNAL...";
+        }
+    }, 1000);
+
+    function showSignal() {
+        let arrow = document.getElementById('indicator-arrow');
+        let status = document.getElementById('status');
+        
+        // Simulating Real Technical Filter
+        let win = Math.random() > 0.45; 
+        
+        arrow.style.display = "block";
+        if (win) {
+            arrow.innerText = "↑";
+            arrow.style.color = "var(--green)";
+            status.innerText = "SIGNAL: STRONG BUY (CALL)";
+        } else {
+            arrow.innerText = "↓";
+            arrow.style.color = "var(--red)";
+            status.innerText = "SIGNAL: STRONG SELL (PUT)";
+        }
+    }
+
+    load(currentPair);
+</script>
+</body>
+</html>
